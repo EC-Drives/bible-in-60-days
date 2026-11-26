@@ -61,6 +61,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-
 .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
 .legend .l-fin::before{background:var(--fin-bg);border-color:var(--fin-bg)}
 .legend .l-st::before{border:2px solid var(--accent)}
+.legend .l-cur::before{background:var(--accent);border-color:var(--accent)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px}
 .now small{display:block;color:var(--muted);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
 .now .title{font-family:var(--display);font-size:1.6rem;font-weight:600;line-height:1.2}
@@ -129,7 +130,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
 
   <div id="gridWrap" hidden style="display:flex;flex-direction:column;gap:12px">
     <div class="grid" id="grid" role="group" aria-label="Choose a day"></div>
-    <p class="legend"><span class="l-fin">Finished</span><span class="l-st">Started</span></p>
+    <p class="legend"><span class="l-cur">Open now</span><span class="l-fin">Finished</span><span class="l-st">Started</span><span>Not started</span></p>
   </div>
 
   <section class="card" aria-label="Player">
@@ -170,6 +171,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
     <li>Press play once. The day's chapters run on by themselves in the plan's order and stop at the end of the day.</li>
     <li>Pause whenever you like. Your place in every day is saved in this browser on this device, so Play carries on from there, even after closing the page.</li>
     <li>Tap a chapter to jump to it. The audio streams from Bible Gateway, so it needs an internet connection.</li>
+    <li>In the grid under "All days", the boldest tile is the day you have open. Filled blue tiles are days you have finished. Outlined tiles are days you have started but not finished; a day counts as started after 30 seconds of listening. Plain tiles are days you have not started. The key under the grid shows each one.</li>
   </ul>
   <button class="reset" id="reset" type="button">Start this day again</button>
   <p class="credit">New King James Version © 1982 Thomas Nelson, read by Simon Bubb. The audio plays from <a href="https://www.biblegateway.com/" target="_blank" rel="noopener">Bible Gateway</a>; nothing is stored here.</p>
