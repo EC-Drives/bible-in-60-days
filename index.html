@@ -19,17 +19,17 @@
 /* Layout: one narrow column. Day switcher, a player card (now playing, chapter scrubber, transport, whole-day progress), then the day's chapters as tap-to-jump rows */
 :root{
   --bg:#f6f7fa; --surface:#ffffff; --fg:#1d2433; --muted:#5d6678; --line:#dfe3ea;
-  --accent:#2f4f8f; --accent-fg:#ffffff; --accent-soft:#e6ecf7; --done:#7b8494; --warn:#9a3b1f;
+  --accent:#2f4f8f; --accent-fg:#ffffff; --accent-soft:#e6ecf7; --done:#7b8494; --warn:#9a3b1f; --fin-bg:#c8d6f0; --fin-fg:#1d2b4a;
   --display:"Literata",Georgia,"Times New Roman",serif;
   --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#12161f; --surface:#1a202c; --fg:#e8ebf2; --muted:#a2abbd; --line:#2c3444;
-  --accent:#9db6ea; --accent-fg:#12161f; --accent-soft:#233150; --done:#7d879a; --warn:#f0a58a; color-scheme:dark}}
+  --accent:#9db6ea; --accent-fg:#12161f; --accent-soft:#233150; --done:#7d879a; --warn:#f0a58a; --fin-bg:#3a5288; --fin-fg:#eef2fa; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161f; --surface:#1a202c; --fg:#e8ebf2; --muted:#a2abbd; --line:#2c3444;
-  --accent:#9db6ea; --accent-fg:#12161f; --accent-soft:#233150; --done:#7d879a; --warn:#f0a58a; color-scheme:dark}
+  --accent:#9db6ea; --accent-fg:#12161f; --accent-soft:#233150; --done:#7d879a; --warn:#f0a58a; --fin-bg:#3a5288; --fin-fg:#eef2fa; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
@@ -54,11 +54,12 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-
 .grid button{aspect-ratio:1;min-width:0;border:1px solid var(--line);background:none;color:var(--fg);border-radius:8px;font:inherit;
   font-size:.8rem;font-variant-numeric:tabular-nums;cursor:pointer;padding:0}
 .grid button.started{border-color:var(--accent);border-width:2px}
-.grid button.fin{background:var(--accent-soft);color:var(--done)}
+
+.grid button.fin{background:var(--fin-bg);color:var(--fin-fg);border-color:var(--fin-bg)}
 .grid button[aria-current="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
 .legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.78rem;margin:-6px 0 0}
 .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
-.legend .l-fin::before{background:var(--accent-soft)}
+.legend .l-fin::before{background:var(--fin-bg);border-color:var(--fin-bg)}
 .legend .l-st::before{border:2px solid var(--accent)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px}
 .now small{display:block;color:var(--muted);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
@@ -349,7 +350,7 @@ function renderGrid(){
   if ($("gridWrap").hidden) return;
   document.querySelectorAll("#grid button").forEach(b => {
     const n = +b.dataset.day, s = S.days[n];
-    const fin = !!(s && s.f), started = !!(s && !s.f && (s.i > 0 || s.t > 1));
+    const fin = !!(s && s.f), started = !!(s && !s.f && (s.i > 0 || s.t > 30));  // a quick look doesn't count
     b.className = fin ? "fin" : started ? "started" : "";
     b.setAttribute("aria-current", String(n === D.n));
     b.setAttribute("aria-label", `Day ${n}${fin ? ", finished" : started ? ", started" : ""}`);
