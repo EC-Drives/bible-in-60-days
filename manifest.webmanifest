@@ -1,0 +1,11 @@
+{
+  "name": "Bible in 60 Days",
+  "short_name": "Bible 60",
+  "description": "Listen through the whole Bible in 60 days, read in the NKJV.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#12161f",
+  "theme_color": "#2f4f8f",
+  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }]
+}
