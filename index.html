@@ -44,6 +44,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-
   padding:0 14px;font:inherit;font-size:.9rem;cursor:pointer}
 .alldays[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent)}
 .sub{color:var(--muted);margin:0;font-size:.92rem}
+.intro{margin:0;font-size:.95rem}
 .grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px}
 .grid button{aspect-ratio:1;min-width:0;border:1px solid var(--line);background:none;color:var(--fg);border-radius:8px;font:inherit;
   font-size:.8rem;font-variant-numeric:tabular-nums;cursor:pointer;padding:0}
@@ -117,6 +118,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
       <button class="alldays" id="allDays" type="button" aria-expanded="false" aria-controls="gridWrap">All days</button>
     </div>
     <p class="sub" id="sub"></p>
+    <p class="intro" id="intro" hidden>Listen through the whole Bible in 60 days, in chronological order. Pick your day below and press play.</p>
   </header>
 
   <div id="gridWrap" hidden style="display:flex;flex-direction:column;gap:12px">
@@ -160,7 +162,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
 
   <ul class="notes">
     <li>Press play once. The day's chapters run on by themselves in the plan's order and stop at the end of the day.</li>
-    <li>Pause whenever you like. Your place in every day is saved on this phone, so Play carries on from there, even after closing the page.</li>
+    <li>Pause whenever you like. Your place in every day is saved in this browser on this device, so Play carries on from there, even after closing the page.</li>
     <li>Tap a chapter to jump to it. The audio streams from Bible Gateway, so it needs an internet connection.</li>
   </ul>
   <button class="reset" id="reset" type="button">Start this day again</button>
@@ -181,7 +183,7 @@ DATA.days.forEach(d => {
   DAYS[d.d].total = DAYS[d.d].ch.reduce((s,x)=>s+x.secs,0);
   DAYS[d.d].verses = DAYS[d.d].ch.reduce((s,x)=>s+x.verses,0);
 });
-const FIRST = DATA.days[0].d, LAST = DATA.days[DATA.days.length - 1].d, START_DAY = DAYS[27] ? 27 : FIRST;
+const FIRST = DATA.days[0].d, LAST = DATA.days[DATA.days.length - 1].d, START_DAY = FIRST;
 const src = c => `https://stream.biblegateway.com/bibles/32/nkjv-bubb/${c.id}.${c.hash}.mp3`;
 const page = c => `https://www.biblegateway.com/audio/bubb/nkjv/${c.id}`;
 const KEY = "nkjv60-player";
@@ -189,8 +191,12 @@ const SPEEDS = [1, 1.15, 1.25, 1.5];
 
 const $ = id => document.getElementById(id);
 const audio = $("audio");
-let S = { day: START_DAY, rate: 1, days: {} };
-try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && DAYS[s.day]) S = Object.assign(S, s); } catch(e) {}
+let S = { day: START_DAY, rate: 1, days: {} }, firstVisit = true;
+try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && DAYS[s.day]){ S = Object.assign(S, s); firstVisit = false; } } catch(e) {}
+// a shared link can open a given day: .../#day-27
+const hashDay = () => { const m = /^#day-?(\d{1,2})$/i.exec(location.hash); return m && DAYS[+m[1]] ? +m[1] : null; };
+const clearHash = () => { try { history.replaceState(null, "", location.pathname + location.search); } catch(e) {} };
+if (hashDay()) { S.day = hashDay(); clearHash(); }
 if (!S.days || typeof S.days !== "object") S.days = {};
 const ds = d => (S.days[d] = S.days[d] || { i:0, t:0, f:false });
 let D = DAYS[S.day], st = ds(D.n), N = D.ch.length;
@@ -400,6 +406,8 @@ document.addEventListener("keydown", e => {
 });
 window.addEventListener("pagehide", () => { if (loadedKey === keyOf() && pendingSeek === null) st.t = audio.currentTime; save(); });
 
+window.addEventListener("hashchange", () => { const n = hashDay(); if (n){ clearHash(); switchDay(n); } });
+if (firstVisit){ $("intro").hidden = false; $("gridWrap").hidden = false; $("allDays").setAttribute("aria-expanded", "true"); }
 buildDay();
 if (!st.f) load(st.i, st.t, false); else render();
 </script>
